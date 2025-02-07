@@ -23,9 +23,10 @@ pub fn build(b: *std.Build) void {
     if (target.result.os.tag == .linux) {
         // The SDL package doesn't work for Linux yet, so we rely on system
         // packages for now.
-        exe.linkSystemLibrary("SDL2");
+        exe.linkSystemLibrary("SDL3");
         exe.linkLibC();
-    } else {
+        // Windows currently just supports sdl2, unless we include it directly.
+    } else if (target.result.os.tag == .windows) {
         const zstbi = b.dependency("zstbi", .{});
         exe.root_module.addImport("zstbi", zstbi.module("root"));
         exe.linkLibrary(zstbi.artifact("zstbi"));
@@ -34,6 +35,16 @@ pub fn build(b: *std.Build) void {
             .target = target,
         });
         exe.linkLibrary(sdl_dep.artifact("SDL2"));
+    }
+
+    // For right now we just worry about macos working.
+    if (target.result.os.tag == .macos) {
+        const zstbi = b.dependency("zstbi", .{});
+        exe.root_module.addImport("zstbi", zstbi.module("root"));
+        exe.linkLibrary(zstbi.artifact("zstbi"));
+
+        exe.linkLibC();
+        exe.linkSystemLibrary("SDL3");
     }
 
     b.installArtifact(exe);
