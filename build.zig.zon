@@ -27,6 +27,10 @@
             .url = "https://github.com/pwbh/SDL/archive/refs/tags/release-2.30.5.tar.gz",
             .hash = "1220329749b6f64dedb802a91dfaff8e68ed3f0dde744514da30ba90cdb66359c897",
         },
+        .SDL_ttf = .{
+            .url = "git+https://github.com/Beyley/SDL_ttf_zig/?ref=HEAD#a3b548d09b16fc37effcf25bbdc653c96cbf3051",
+            .hash = "1220dfa576dbbaa489a4ea1dc420b4220ddbffd3e2a2ac5a8c366a855f6687f4231c",
+        },
     },
     .paths = .{
         "build.zig",

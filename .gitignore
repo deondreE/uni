@@ -2,3 +2,5 @@
 .zig-out
 zig-out/bin/uni.exe
 /zig-out
+
+*.ttf
