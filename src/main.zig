@@ -2,7 +2,9 @@ const std = @import("std");
 const c = @cImport({
     @cInclude("SDL2/SDL.h");
 });
-const curve = @import("./ui/curve.zig");
+const w = @import("./ui/widgets.zig");
+const layout = @import("./ui/layout.zig");
+// const curve = @import("./ui/curve.zig");
 
 fn loop(renderer: *c.SDL_Renderer) void {
     var quit = false;
@@ -26,6 +28,10 @@ fn loop(renderer: *c.SDL_Renderer) void {
 
 fn draw(renderer: *c.SDL_Renderer) void {
     // var rect: c.SDL_Rect = .{ .x = 250, .y = 150, .w = 200, .h = 200 };
+    comptime var container = layout.Container{ .layout = layout.Layout.Vertical, .children = null };
+
+    const btn = createButton(50, 0, 200, 50);
+    container.addChild(&btn);
 
     _ = c.SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     _ = c.SDL_RenderClear(renderer);
@@ -33,10 +39,25 @@ fn draw(renderer: *c.SDL_Renderer) void {
 
     _ = c.SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     //curve.drawQuadraticBezierCurve(renderer, .{ 100.0, 500.0 }, .{ 400.0, 100.0 }, .{ 700.0, 500.0 }, 120);
-    curve.drawCubicBezierCurve(renderer, .{ 100.0, 500.0 }, .{ 200.0, 100.0 }, .{ 600.0, 100.0 }, .{ 700.0, 500.0 }, 500);
+    // curve.drawCubicBezierCurve(renderer, .{ 100.0, 500.0 }, .{ 200.0, 100.0 }, .{ 600.0, 100.0 }, .{ 700.0, 500.0 }, 500);
+    container.arrange(renderer);
 
     _ = c.SDL_RenderPresent(renderer);
     _ = c.SDL_Delay(16);
+}
+
+fn renderButton(renderer: *c.SDL_Renderer, widget: *w.Widget) void {
+    // Set color for the button (e.g., blue)
+    _ = c.SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+    _ = c.SDL_RenderFillRect(renderer, &widget.rect);
+}
+
+fn createButton(x: i32, y: i32, wi: i32, h: i32) w.Widget {
+    return w.Widget{
+        .rect = c.SDL_Rect{ .x = x, .y = y, .w = wi, .h = h },
+        .render = renderButton,
+        .next = null,
+    };
 }
 
 pub fn main() !void {
