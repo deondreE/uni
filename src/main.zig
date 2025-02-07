@@ -70,20 +70,6 @@ fn draw(renderer: *c.SDL_Renderer) void {
     _ = c.SDL_Delay(1000 / 60);
 }
 
-fn renderButton(renderer: *c.SDL_Renderer, widget: *w.Widget) void {
-    // Set color for the button (e.g., blue)
-    _ = c.SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-    _ = c.SDL_RenderFillRect(renderer, &widget.rect);
-}
-
-fn createButton(x: i32, y: i32, wi: i32, h: i32) w.Widget {
-    return w.Widget{
-        .rect = c.SDL_Rect{ .x = x, .y = y, .w = wi, .h = h },
-        .render = renderButton,
-        .next = null,
-    };
-}
-
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
