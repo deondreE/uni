@@ -26,6 +26,9 @@ pub fn build(b: *std.Build) void {
         exe.linkSystemLibrary("SDL2");
         exe.linkLibC();
     } else {
+        const zstbi = b.dependency("zstbi", .{});
+        exe.root_module.addImport("zstbi", zstbi.module("root"));
+        exe.linkLibrary(zstbi.artifact("zstbi"));
         const sdl_dep = b.dependency("SDL", .{
             .optimize = .ReleaseFast,
             .target = target,

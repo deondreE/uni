@@ -12,6 +12,13 @@ fn loop(renderer: *c.SDL_Renderer) void {
         var event: c.SDL_Event = undefined;
         while (c.SDL_PollEvent(&event) != 0) {
             switch (event.type) {
+                c.SDL_WINDOWEVENT => {
+                    if (event.window.type == c.SDL_WINDOWEVENT_SIZE_CHANGED) {
+                        const new_width = event.window.data1;
+                        const new_height = event.window.data2;
+                        std.debug.print("Window resized to {}x{}\n", .{ new_width, new_height });
+                    }
+                },
                 c.SDL_QUIT => {
                     quit = true;
                 },
@@ -27,23 +34,40 @@ fn loop(renderer: *c.SDL_Renderer) void {
 // fn update(deltatime: f64) void {}
 
 fn draw(renderer: *c.SDL_Renderer) void {
+    const WINDOW_WIDTH = 800;
+    const WINDOW_HEIGHT = 600;
+    const RECT_WIDTH: usize = 25;
+    const RECT_HEIGHT: usize = 25;
+    const SPACING_X: usize = 10;
+    const SPACING_Y: usize = 10;
+    const GRID_COLS = WINDOW_WIDTH / RECT_WIDTH;
+    const GRID_ROWS = WINDOW_HEIGHT / RECT_HEIGHT;
     // var rect: c.SDL_Rect = .{ .x = 250, .y = 150, .w = 200, .h = 200 };
-    comptime var container = layout.Container{ .layout = layout.Layout.Vertical, .children = null };
-
-    const btn = createButton(50, 0, 200, 50);
-    container.addChild(&btn);
 
     _ = c.SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     _ = c.SDL_RenderClear(renderer);
     //  _ = c.SDL_RenderDrawRect(renderer, &rect);
 
     _ = c.SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
     //curve.drawQuadraticBezierCurve(renderer, .{ 100.0, 500.0 }, .{ 400.0, 100.0 }, .{ 700.0, 500.0 }, 120);
     // curve.drawCubicBezierCurve(renderer, .{ 100.0, 500.0 }, .{ 200.0, 100.0 }, .{ 600.0, 100.0 }, .{ 700.0, 500.0 }, 500);
-    container.arrange(renderer);
+
+    for (0..GRID_COLS) |row| {
+        for (0..GRID_ROWS) |col| {
+            const rect = c.SDL_Rect{
+                .x = @intCast(col * (RECT_WIDTH + SPACING_X)),
+                .y = @intCast(row * (RECT_HEIGHT + SPACING_Y)),
+                .w = RECT_WIDTH,
+                .h = RECT_HEIGHT,
+            };
+            //std.debug.print("Rect at col: {}, row: {} -> x: {}, y: {}\n", .{ col, row, rect.x, rect.y });
+            _ = c.SDL_RenderFillRect(renderer, &rect);
+        }
+    }
 
     _ = c.SDL_RenderPresent(renderer);
-    _ = c.SDL_Delay(16);
+    _ = c.SDL_Delay(1000 / 60);
 }
 
 fn renderButton(renderer: *c.SDL_Renderer, widget: *w.Widget) void {
